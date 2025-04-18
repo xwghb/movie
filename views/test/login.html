@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>购物</title>
+    <link href="../../assets/layui/css/layui.css" media="all" rel="stylesheet">
+    <script src="../../assets/layui/layui.js" charset="utf-8"></script>
+    <script src="../../assets/js/util.js"></script>
+    <script src="../../assets/js/hls.min.js"></script>
+    <script src="../../assets/js/jquery-1.8.1.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../assets/css/semantic.min.css">
+    <script src="../../assets/js/semantic.min.js"></script>
+</head>
+
+<body>
+    <input type="text" id="uid">
+    <input id="pwd">
+    <button id="tj">提交</button>
+    <button id="cs">退出</button>
+    <button id="test">测试</button>
+    <button id="test2">测试2</button>
+</body>
+<script>
+    $("#tj").click(function() {
+        $.ajax({
+            url: "http://localhost:8080/login",
+            data: JSON.stringify({
+                "username": $("#uid").val(),
+                "password": $('#pwd').val()
+            }),
+            contentType: 'application/json;charset=UTF-8',
+            type: "Post",
+            dataType: "json",
+            cache: false, //上传文件无需缓存
+            success: function(result) {
+                // console.log(result)
+
+                if (result.code == 200) {
+                    window.localStorage.setItem('jwt', result.data);
+                    alert("登陆成功")
+                } else {
+                    alert("账号或密码错误")
+                }
+
+            }
+        })
+    })
+
+
+    $("#cs").click(function() {
+        $.ajax({
+            url: "http://localhost:8080/user/logout",
+            type: "get",
+            headers: {
+                token: window.localStorage.getItem('jwt')
+            },
+            success: function(result) {
+                window.localStorage.removeItem('jwt')
+                console.log(result)
+
+
+            }
+        })
+    })
+
+
+
+    $("#test").click(function() {
+        $.ajax({
+            url: "http://localhost:8080/user/all",
+            type: "get",
+            headers: {
+                token: window.localStorage.getItem('jwt')
+            },
+            success: function(result) {
+                // window.localStorage.removeItem('jwt')
+                console.log(result)
+
+
+            }
+        })
+    })
+
+
+    $("#test2").click(function() {
+        $.ajax({
+            url: "http://localhost:8080/user/all3",
+            type: "get",
+            headers: {
+                token: window.localStorage.getItem('jwt')
+            },
+            success: function(result) {
+                // window.localStorage.removeItem('jwt')
+                console.log(result)
+
+
+            }
+        })
+    })
+</script>
+
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../../assets/layui/css/layui.css" media="all" rel="stylesheet">
+    <script src="../../assets/layui/layui.js" charset="utf-8"></script>
+    <script src="../../assets/js/util.js"></script>
+    <script src="../../assets/js/hls.min.js"></script>
+    <script src="../../assets/js/jquery-1.8.1.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../assets/css/semantic.min.css">
+    <script src="../../assets/js/semantic.min.js"></script>
+    <title>播放页</title>
+</head>
+
+<body>
+
+    <!-- 导航栏 start -->
+    <!-- <ul class="layui-nav">
+        <li class="layui-nav-item">xwvideo</li>
+        <li class="layui-nav-item"><a href="./tslist.html">首页</a></li>
+        <li class="layui-nav-item"><a href="./hot.html">热门</a></li>
+        <li class="layui-nav-item"><a href="">看看</a></li>
+        <li class="layui-nav-item"><a href="">社区</a></li>
+        <input style="height: 20px; padding-bottom: 8px;margin-left: 100px;">
+        <li class="layui-nav-item"><a><i class="layui-icon" style="font-size: 20px; color: #1E9FFF;"">&#xe615;</i>     </a></li>
+
+        <div style="float: right;">
+            <li class="layui-nav-item">
+                <a href="../person/person.html"><img src="//t.cn/RCzsdCq" class="layui-nav-img" id="topavatar">我</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="javascript:;">修改信息</a></dd>
+                    <dd><a href="javascript:;">安全管理</a></dd>
+                    <dd><a href="javascript:;">退出</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">消息</a></li>
+            <li class="layui-nav-item"><a href="">收藏</a></li>
+            <li class="layui-nav-item"><a href="">动态</a></li>
+            <li class="layui-nav-item"><a href="./test.html"><i class="layui-icon" style="font-size: 20px; color: #1E9FFF;"">&#xe67c;</i>     </a>
+            </li>
+
+
+        </div>
+    </ul> -->
+    <!-- 导航栏 end -->
+
+
+    <!-- Following Menu -->
+    <div class="ui large top fixed tabular menu">
+        <div class="ui container">
+
+            <a class="item" href="./tslist.html">主页</a>
+            <a class="item" href="./hot.html">热门</a>
+            <a class="item" href="./category.html">分类</a>
+            <a class="active item" href="./follow.html">我关注的</a>
+            <div class="right menu">
+                <div class="item" style="margin-right: 360px;">
+                    <div class="ui action left icon input">
+                        <input type="text" placeholder="搜索" id="infosearch">
+                        <button class="ui button" id="searchbtn"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">搜索</font></font></button>
+                    </div>
+                </div>
+                <a href="../person/person.html" class="authyes" style="display: none;">
+                    <img id="topavatar" src="http://101.33.243.182:8092/storage/file/ts/pics/11220fe9fb764e90b77caee33ca2037b" style="width: 40px;height: 40px;margin-top: 5px;border: 1px solid wheat;border-radius: 100%;margin-right: 15px;">
+                </a>
+
+                <li class="item authyes" style="display: none;"><a href="../video/test.html"><i class="layui-icon" style="font-size: 22px;color: black;">&#xe681;</i>     </a>
+                </li>
+                <li class="item authyes" style="display: none;">
+                    <a href="../person/logout.html"><i class="layui-icon" style="font-size: 20px;color: red;">&#xe682;</i></a>
+                </li>
+                <div class="item authno">
+                    <a class="ui button" href="../person/login.html">登录</a>
+                </div>
+                <div class="item authno">
+                    <a class="ui primary button" href="../person/register.html">注册</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br><br><br>
+    <div style="margin-left: 5%;margin-right: 5%;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md9">
+                <div style="padding-left: 15%;padding-right: 15%;">
+                    <h1 id="vtitle" style="margin-top: 5%;">起风了</h1>
+                    <span class="layui-badge layui-bg-blue" id="vcategory"></span>
+                    <!-- <font style="vertical-align: inherit;" id="vcategory"></font> -->
+                </div>
+
+                <br>
+                <div style="padding-left: 15%;padding-right: 15%;">
+                    <div id="danmu" style="overflow:hidden"><video controls="controls" id="video" preload="auto" autoplay muted style="width: 100%;position: relative;"></video></div>
+
+                </div>
+                <br><br>
+                <div style="width: 70%; margin-left: 15%;margin-right: 15%;">
+                    <div class="layui-row">
+                        <div class="layui-col-xs10">
+                            <input type="text" id="danmutext" lay-verify="title" autocomplete="off" placeholder="发一条带劲的弹幕吧" class="layui-input" maxlength="12">
+                        </div>
+                        <div class="layui-col-xs2">
+                            <button class="layui-btn" id="danmubtn" style="width: 100%;">下一集</button>
+                        </div>
+                    </div>
+                </div><br>
+                <div class="layui-row" style="width: 70%; margin-left: 15%;margin-right: 15%;">
+                    <div class="layui-col-xs6">
+                        <!-- 点赞，收场等 -->
+                        <div class="layui-row">
+                            <div class="layui-col-xs4">
+                                <i class="layui-icon" value="0" id="zan" style="font-size: 30px; color: gray;">&#xe6c6;</i>
+                            </div>
+                            <div class="layui-col-xs4">
+                                <i class="layui-icon" id="fav" style="font-size: 30px; color: gray;">&#xe67b;</i>
+                            </div>
+                            <div class="layui-col-xs4">
+                                <i class="layui-icon" id="share" style="font-size: 30px; color: gray;">&#xe641;</i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+
+                    </div>
+
+                </div><br><br>
+                <div style="width: 70%; margin-left: 15%;margin-right: 15%;">
+                    <h1>评论</h1>
+                </div><br><br>
+                <textarea placeholder="发一条牛批的评论吧" class="layui-textarea" style="width: 70%; margin-left: 15%;margin-right: 15%;" id="vcom"></textarea><br>
+                <div style="width: 70%; margin-left: 15%;margin-right: 15%;">
+                    <button style="float: right;" class="layui-btn" id="vcombt">发表评论</button><br><br>
+                    <br><br><br>
+                    <!-- 评论显示 -->
+                    <div style="width: 100%;" id="cominfo">
+                    </div><br><br>
+                    <div style="width: 100%;text-align: center;">
+                        <button id="mcomment" class="layui-btn layui-btn-primary layui-border-blue">加载更多</button>
+                    </div>
+
+                </div>
+            </div>
+            <div class="layui-col-md3"><br><br>
+                <div class="layui-row">
+                    <div class="layui-col-xs5">
+                        <img id="vavatar" src="" style="width: 80px;height: 80px;border: 1px solid salmon;border-radius: 100%;">
+                    </div>
+                    <div class="layui-col-xs7" style="margin-top: 9px;">
+                        <h3>
+                            <a href="" id="userhref"><b id="vwriter">作者</b></a></h3>
+                        <b id="vfan"></b><button id="follow" class="layui-btn layui-btn-sm layui-btn-normal" value="0" style="margin-left: 10px;">关注</button>
+                        <text id="acid" value=""></text>
+                    </div>
+                </div>
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+                    <legend>作者最新作品</legend>
+                </fieldset>
+                <div id="newvideo">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- <video id="video" src="http://106.14.252.11:8001/file/file/ts/1.mp4" autoplay muted></video> -->
+
+
+</body>
+
+<script>
+    name_url = 'https://s1.bfengbf.com/video/renmindemingyi/第'
+    let index = getParams("index")
+    rear_url = '集/index.m3u8'
+    video_start()
+
+
+
+    $("#danmubtn").click(function() {
+        index++
+        window.location.href = 'http://127.0.0.1:8001/views/test/buy.html?index=' + index
+    })
+
+
+    function video_start() {
+        if (Hls.isSupported()) {
+            var video = document.getElementById('video');
+            var hls = new Hls();
+            video_url = name_url + index + rear_url
+            hls.loadSource(video_url);
+            // hls.loadSource("http://172.24.30.63:9000/tsfile/811001ad6c8a4be9ae6dbf3e73c1f3f3/1.m3u8");
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                video.play();
+            });
+        }
+
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+</html>
+
+</html>

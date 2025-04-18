@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<head>
+    <title>websocket</title>
+    <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.min.js"></script>
+    <script src="http://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="../../assets/js/util.js"></script>
+    <script src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>
+    <script src="../../assets/js/jquery-1.8.1.js"></script>
+    <link rel="stylesheet" href="../../assets/layui/css/layui.css" media="all">
+    <script src="../../assets/layui/layui.js" charset="utf-8"></script>
+</head>
+
+<body>
+
+    <ul class="layui-nav" lay-bar="disabled">
+        <div class="layui-row">
+            <div class="layui-col-md4">
+                <div class="grid-demo grid-demo-bg1" style="padding: 20px 0;">
+                    <a href="./bloglist.html" style="color: white;">
+                        <h1 style="font-size: 20px;">xiaowblog</h1>
+                    </a>
+                </div>
+            </div>
+            <div class="layui-col-md4">
+                <div class="grid-demo">
+                    <div class="layui-input-block " style="padding: 10px 0;">
+                        <input type="text " name="title " required lay-verify="required " placeholder="请输入内容 " autocomplete="off " class="layui-input ">
+
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md4 ">
+                <div class="grid-demo grid-demo-bg1 ">
+                    <div style="text-align: right; ">
+                        <li class="layui-nav-item ">
+                            <a href=" ">带徽章<span class="layui-badge ">9</span></a>
+                        </li>
+                        <li class="layui-nav-item ">
+                            <a href=" ">小圆点<span class="layui-badge-dot "></span></a>
+                        </li>
+                        <li class="layui-nav-item " lay-unselect=" " style="left: 0px; ">
+                            <a href="javascript:; "><img src="//t.cn/RCzsdCq " class="layui-nav-img "></a>
+                            <dl class="layui-nav-child ">
+                                <dd><a href="./test.html ">写文章</a></dd>
+                                <dd><a href="javascript:; ">横线隔断</a></dd>
+                                <hr>
+                                <dd style="text-align: center; "><a href=" ">退出</a></dd>
+                            </dl>
+                        </li>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ul>
+    <div class="layui-row layui-col-space1" style="width: 70%;height: 800px; margin-top: 5%;margin-left: 15%;">
+        <div class="layui-col-md3 " id="friends" style="background-color: darkcyan; height: 100%;">
+
+        </div>
+        <div class="layui-col-md9 " style="height: 100%;border-top:1px solid #000;">
+            <div id="top" style="height: 5%;background-color: darkcyan;text-align: center;">
+                <h1 id="topname" style="color: white;"></h1>
+            </div>
+            <div id="info" style="height: 65%;margin: 5px;overflow:auto">
+
+
+            </div>
+            <div id="toolbar" style="height: 5%;text-align: center;">
+
+            </div>
+            <div id="text" style="height: 22%;">
+                <textarea id="infotext" style="height: 80%;width: 100%;  
+                resize: none;
+                cursor: pointer;"></textarea>
+                <div style="height: 20%;padding: 5px;"><button id="sendinfo" value="1" class="layui-btn">发送</button></div>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+
+<script>
+    $('#sendinfo').click(function() {
+        send()
+    })
+</script>
+
+<script type="text/javascript">
+    var flist = new Array();
+    var webSocket;
+    var commWebSocket;
+    if ("WebSocket" in window) {
+        webSocket = new WebSocket("ws://lcoalhost:8888/websocket/" + getParams("id"));
+
+        //连通之后的回调事件
+        webSocket.onopen = function() {
+            //webSocket.send( document.getElementById('username').value+"已经上线了");
+            console.log("已经连通了websocket");
+        };
+
+        //接收后台服务端的消息
+        webSocket.onmessage = function(evt) {
+            var received_msg = evt.data;
+            var obj = JSON.parse(received_msg);
+            //普通消息
+            if (obj.messageType == 2) {
+                if (obj.fromusername == $("#sendinfo").attr('value')) {
+                    html = '<div style="padding: 15px;background-color: darkcyan;border-radius: 10px;width:auto; display:inline-block !important; display:inline;color:white;">' + obj.textMessage + '</div><br><br>'
+                    $("#info").append(html);
+
+                    $("#info").animate({
+                        scrollTop: $("#info").prop("scrollHeight")
+                    }, 400); //0.4秒内滚到底部
+                } else {
+                    var state = 0;
+                    $(".f_item").each(function() {
+                        if ($(this).attr('value') == obj.fromusername) {
+                            $(this).find('.layui-badge-dot').css("display", "block")
+                            state = 1;
+                        }
+                    })
+                    if (state = 0) {
+                        //说明之前没有聊过天 ，再将改人的信息加入聊天栏中，需要访问account的接口获取用户数据
+                    }
+                }
+
+            }
+
+            //渲染聊天栏朋友
+            if (obj.messageType == 3) {
+                users = obj.infos;
+                for (e in users) {
+                    html = '            <div class="f_item" value=' + users[e].acid + ' style="height: 50px;padding: 10px;">\
+                <div class="layui-row layui-col-space1">\
+                    <div class="layui-col-md3">\
+                        <div class="grid-demo grid-demo-bg1">\
+                            <img src="' + users[e].avator + '" style="height: 80%;width: 100%; border-radius: 100px;" />\
+                        </div>\
+                    </div>\
+                    <div class="layui-col-md9">\
+                        <div class="grid-demo" style="text-align: center;"><h1 style="color:white;" class="username">' + users[e].username + '</h1> <span class="layui-badge-dot" style="display:none"></span>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div><br><br>'
+                    $('#friends').append(html)
+                    flist.push(users[e].acid)
+                }
+                var item = $('.f_item').click(function() {
+                    $(this).find('.layui-badge-dot').css("display", "none")
+                    $('#info').html("")
+                    $('#topname').text($(this).find('.username').text())
+                    $("#sendinfo").attr('value', $(this).attr('value'))
+                        //渲染消息
+                    $.ajax({
+                        url: "http://localhost:9010/message/getByToAndFrom?to=" + getParams("id") + "&from=" + $(this).attr('value'), //路径 只需改为你的路径即可
+                        type: "get",
+                        dataType: "json",
+                        success: function(data) {
+                            for (e in data.data) {
+                                if (data.data[e].to2 == getParams("id")) {
+                                    html = '<div style=" word-break: break-all;word-wrap: break-word;padding: 15px;background-color: darkcyan;border-radius: 10px;width:auto; display:inline-block !important; display:inline;color:white;">' + data.data[e].info + '</div><br><br>'
+                                    $("#info").append(html);
+                                } else {
+                                    html = '<div style="word-break: break-all;word-wrap: break-word;float:right;padding: 15px;background-color: darkcyan;border-radius: 10px;width:auto; display:inline-block !important; display:inline;color:white;">' + data.data[e].info + '</div><br><br><br><br>'
+                                    $("#info").append(html);
+                                }
+                            }
+                        }
+                    })
+                    $("#info").animate({
+                        scrollTop: $("#info").prop("scrollHeight")
+                    }, 400); //0.4秒内滚到底部
+
+                })
+            }
+        };
+
+        //连接关闭的回调事件
+        webSocket.onclose = function() {
+            console.log("连接已关闭...");
+        };
+    } else {
+        // 浏览器不支持 WebSocket
+        alert("您的浏览器不支持 WebSocket!");
+    }
+
+    //发送消息
+    function send() {
+        var selectText = $("#infotext").val();
+        var message = {
+            "message": selectText,
+            "to": $('#sendinfo').attr('value'),
+            "from": getParams("id")
+        }
+        webSocket.send(JSON.stringify(message));
+        $("#infotext").val("");
+        html = '<div style=" word-break: break-all;word-wrap: break-word;float:right;padding: 15px;background-color: darkcyan;border-radius: 10px;width:auto; display:inline-block !important; display:inline;color:white;">' + selectText + '</div><br><br><br><br>'
+        $("#info").append(html);
+        //滚动条到最低部
+        $("#info").animate({
+            scrollTop: $("#info").prop("scrollHeight")
+        }, 400); //0.4秒内滚到底部
+    }
+</script>
+
+</html>
